@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Feliz 14 Mi Bel</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet"
+            href="{{ url_for('static', filename='css/index.css') }}">
+    </head>
+    <body class="m-auto">
+        <div
+            class="text-white flex flex-col fondo1 h-screen justify-center items-center align-center overflow-y-scroll overflow-x-hidden w-100 m-auto">
+            <div class="text-center content-center items-center">
+                <p
+                    class="text-2xl text-center pt-5 absolute top-0 end-5">Analizando
+                    nuestro chat de whatsapp❤️</p>
+            </div>
+            <div class="text-center items-center">
+                Desde el 11/11/2023 (porque no se puede antes 🥹),
+                estas son nuestras estadísticas mi amor ❤️
+                {{ estadistica_df | safe }}
+            </div>
+        </div>
+        <div
+            class="text-white fondo2 h-screen  items-center overflow-y-scroll overflow-x-hidden w-100 m-auto">
+            <div class="text-center">
+                <p class="text-xxl my-3">Los emojis que más usamos 🥹</p>
+                {{ emoji_df | safe }}
+            </div>
+            <div id="plotly-graph">
+                {{ graph_html | safe }}
+            </div>
+        </div>
+        <div
+            class="h-screen w-100 fondo3 text-white flex flex-col justify-start">
+            <div class="text-center items-center pt-5">
+                {{ df_MiembrosActivos | safe }}
+                <p class="text-xl">Yo te mando más mensajes mi amor 🥹</p>
+            </div>
+        </div>
+        <div
+            class="h-screen w-100 fondo4 text-white flex flex-col justify-start overflow-x-scroll ">
+            <div class="text-center items-center pt-5">
+                {{ miembro_stats_df | safe }}
+                <p class="text-xl">Yo escribo más que tú en cada mensaje amor,
+                    un poquito jeje 🥹</p>
+            </div>
+        </div>
+        <div class="h-screen w-100 fondo5 flex flex-col justify-between">
+            <p class="text-sm text-center p-4 font-bold">Según el análisis,
+                hablamos muchísimo entre las 3 y 4 de la tarde, mi amor🥹
+                Solemos enviarnos más de 100 mensajes jeje Luego, el momento en
+                el que más hablamos es en la noche, amor mío.
+                Seguro para despedirnos, mi amorcito bella 🥹❤️
+            </p>
+            <div>
+                {{ graph_html2 | safe }}
+
+            </div>
+        </div>
+        <div class="h-screen w-100 fondo6 flex flex-col justify-end">
+            <p class="text-sm text-center p-4 text-white font-bold">El día que
+                más hablamos
+                fue el 29/12, mi amor, nos enviamos 1034 mensajitos 🥹</p>
+            {{ graph_html3 | safe }}
+
+        </div>
+        <div class="h-screen w-100 bg-black ">
+            <p class="text-lg text-white text-center p-3">Estas son las palabras
+                que más nos
+                hemos enviado, mi amor. Quería hacerte
+                un detalle distinto por San Valentín, muy a mi manera, mi amor
+                🥹❤️ nuestro chat es una manera
+                muy importante de comunicación para nosotros y me parece que
+                analizarla y ver que nuestros emojis más usados
+                y nuestras palabras más usadas coinciden con el significado que
+                ambos tenemos de lo nuestro es muy hermoso.
+                TE AMO DEMASIADO MI BELINDA HERMOSA ❤️
+            </p>
+            <img src="{{ url_for('static', filename='wordcloud.png') }}"
+                alt="Word Cloud">
+            <p class="text-2xl text-white text-center p-3">Feliz San Valentín, amor de mi vida❤️
+            </div>
+            <script>
+            
+        // Obtén la cadena JSON del gráfico del servidor Flask
+        /*var graph_json = '{{ graph_json | safe }}';
+        console.log(graph_json);
+        // Parsea la cadena JSON en un objeto de Plotly
+        var graph_data = JSON.parse(graph_json);
+
+        // Renderiza el gráfico en el contenedor correspondiente
+        Plotly.newPlot('plotly-graph', graph_data.data, graph_data.layout);*/
+
+    </script>
+        </body>
+    </html>

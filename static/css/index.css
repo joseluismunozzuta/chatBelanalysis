@@ -1,0 +1,44 @@
+.fondo1{
+    background-image: url('../20240210_234901.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.fondo2{
+    background-image: url('../fondo2.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.fondo3{
+    background-image: url('../fondo3.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.fondo4{
+    background-image: url('../fondo4.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.fondo5{
+    background-image: url('../fondo5.jpg');
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
+}
+.fondo6{
+    background-image: url('../fondo6.jpg');
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: cover;
+}
+
+table{
+    margin: auto;
+    max-width: 95%;
+}
+table thead tr{
+    text-align: center;
+}
