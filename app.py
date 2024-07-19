@@ -13,6 +13,7 @@ import plotly.io as pio
 import plotly.express as px
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud, STOPWORDS
+from datetime import datetime
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -89,7 +90,6 @@ def mostrar_pagina_principal():
     # Convertir la lista con los datos a dataframe
     pd.set_option('display.max_columns', None)
     df = pd.DataFrame(DatosLista, columns=['Fecha', 'Hora', 'Miembro', 'Mensaje'])
-
     df = df.dropna()
 
     # Resetear el índice
@@ -217,15 +217,54 @@ def mostrar_pagina_principal():
     miembro_stats_df['Links'] = miembro_stats_df['Links'].apply(int)
     miembro_stats_df.sort_values(by=['Mensajes'], ascending=False)
 
-    # Crear una columna de 1 para realizar el conteo de mensajes
-    df['# Mensajes por hora'] = 1
+    def preprocess_time(time_str):
+        # Further clean up the string by removing additional spaces around 'a.' and 'p.'
+        time_str = time_str.replace('\u202F', ' ')
+        time_str = time_str.replace('a. m.', 'AM').replace('p. m.', 'PM')
+        # Parse the time string into a datetime object
+        return datetime.strptime(time_str, "%I:%M %p")
 
-    # Sumar (contar) los mensajes que tengan la misma fecha
-    date_df = df.groupby('Hora').sum()
-    date_df.reset_index(inplace=True)
+
+    df['HoraParseadaRango'] = df['Hora'].apply(preprocess_time)
+    df['HoraParseada'] = df['HoraParseadaRango'].dt.strftime('%H:%M')
+    
+    def create_range_hour(hour):
+        start_hour = hour.hour
+        end_hour = (hour + pd.Timedelta(hours=1)).hour
+        return f'{start_hour:02d} - {end_hour:02d} h'
+    
+    # Apply the function to create the "Range Hour" column
+    df['rangoHora'] = df['HoraParseadaRango'].apply(lambda x: f'{x.hour:02d} - {(x + pd.Timedelta(hours=1)).hour:02d} h')
+
+    df['# Mensajes por rango de hora'] = 1
+    date_df = df.groupby('rangoHora')['# Mensajes por rango de hora'].count().reset_index()
 
     # Plotear la cantidad de mensajes respecto del tiempo
-    fig = px.line(date_df, x='Hora', y='# Mensajes por hora')
+    fig = px.line(date_df, x='rangoHora', y='# Mensajes por rango de hora')
+
+    # Ajustar el gráfico
+    fig.update_layout(
+        title={'text': 'Cantidad de mensajes vs Tiempo',
+                'y':0.96,
+                'x':0.5,
+                'xanchor': 'center'},
+        font=dict(size=12))
+    fig.update_xaxes(title_text='Rango de hora', tickangle=30)
+    fig.update_yaxes(title_text='# Mensajes')
+    graph_htmlNew = pio.to_html(fig, full_html=False)
+
+    # Crear una columna de 1 para realizar el conteo de mensajes
+    df['# Mensajes en esta hora'] = 1
+
+    # Sumar (contar) los mensajes que tengan la misma fecha
+    #date_df = df.groupby('rangoHora').sum()
+    #date_df.reset_index(inplace=True)
+
+    date_df = df.groupby('HoraParseada')['# Mensajes en esta hora'].count().reset_index()
+
+
+    # Plotear la cantidad de mensajes respecto del tiempo
+    fig = px.line(date_df, x='HoraParseada', y='# Mensajes en esta hora')
 
     # Ajustar el gráfico
     fig.update_layout(
@@ -238,12 +277,15 @@ def mostrar_pagina_principal():
     fig.update_yaxes(title_text='# Mensajes')
     graph_html2 = pio.to_html(fig, full_html=False)
 
+    #Process dates to format
+    df['Fecha'] = pd.to_datetime(df['Fecha'], format='%d/%m/%Y')
+
     # Crear una columna de 1 para realizar el conteo de mensajes
     df['# Mensajes por día'] = 1
 
     # Sumar (contar) los mensajes que tengan la misma fecha
-    date_df = df.groupby('Fecha').sum()
-    date_df.reset_index(inplace=True)
+    date_df = df.groupby('Fecha')['# Mensajes por día'].sum().reset_index()
+    date_df.sort_values(by='Fecha', inplace=True)
 
     # Plotear la cantidad de mensajes respecto del tiempo
     fig = px.line(date_df, x='Fecha', y='# Mensajes por día')
@@ -270,10 +312,10 @@ def mostrar_pagina_principal():
 
     # Renderizar la plantilla HTML principal y pasar los gráficos y los datos tabulares como variables de contexto
     return render_template('index.html', estadistica_df=estadistica_df.to_html(), 
-                           emoji_df=emoji_df.to_html(), graph_html=graph_html,
+                           emoji_df=emoji_df.to_html(), graph_html=graph_html,graph_htmlNew=graph_htmlNew,
                            df_MiembrosActivos=df_MiembrosActivos.to_html(),
                            miembro_stats_df=miembro_stats_df.to_html(),
                            graph_html2=graph_html2, graph_html3=graph_html3)
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
